@@ -47,6 +47,9 @@
             //isDirty to re-evaluate
             databaseValue(newValue);
          },
+         setDatabaseValueToCurrent = function () {
+            databaseValue(currentValue());
+         },
          revertToDatabaseValue = function () {
             //set the currentValue back to the database value
             //this is used for such cases as a cancel of an edit
@@ -88,6 +91,7 @@
             isValid: isValid,
             errorMessage: errorMessage,
             setDatabaseValue: setDatabaseValue,
+            setDatabaseValueToCurrent: setDatabaseValueToCurrent,
             revertToDatabaseValue: revertToDatabaseValue,
             setValueChangedCallback : setValueChangedCallback,
             destroy: destroy

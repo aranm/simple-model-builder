@@ -11,7 +11,7 @@
 
          //add any other fields that exist on the fieldData as fields on the simple field
          for (var prop in fieldData) {
-            if (prop === "initialValue" || prop === "databaseValue" || prop === "validator" || prop === "valueChanged") { }
+            if (prop === "initialValue" || prop === "databaseValue" || prop === "validator" || prop === "valueChanged" || prop === "propertyName") { }
             else if (newField.hasOwnProperty(prop)) {
                //We can't add a field that might overwrite one of the simpleField's field's
                throw new Error("Field already has the property " + prop);
@@ -86,7 +86,7 @@
 
          //add any other properties that exist on the data as properties on the view model
          for (var prop in data) {
-            if (prop === "fields" || prop === "subModelProperties" || prop === "subModelArray") { }
+            if (prop === "fields" || prop === "subModelProperties" || prop === "arrayModelProperties") { }
             else if (newViewModel.hasOwnProperty(prop)) {
                //We can't add a field that might overwrite one of the view model's fields
                throw new Error("View model already has the property " + prop);
@@ -160,7 +160,25 @@
             });
          };
          
+         newViewModel.setFieldsToCurrentValue = function () {
+            //revert any simple fields
+            ko.utils.arrayForEach(allFields(), function (field) {
+               field.setDatabaseValueToCurrent();
+            });
 
+            //revert all sub models
+            ko.utils.arrayForEach(allSubModels(), function (subModel) {
+               subModel.setFieldsToCurrentValue();
+            });
+
+            //revert any models of sub arrays
+            ko.utils.arrayForEach(allSubArraysOfModels(), function (subModelArray) {
+               ko.utils.arrayForEach(subModelArray(), function (subModel) {
+                  subModel.setFieldsToCurrentValue();
+               });
+            });
+         };
+         
          return newViewModel;
       };
 
