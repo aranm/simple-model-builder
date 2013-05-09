@@ -28,7 +28,7 @@
                   returnValue = isValidData;
                   errorMessage("");
                }
-               else{
+               else {
                   returnValue = isValidData.isValid;
                   errorMessage(isValidData.errorMessage);
                }
@@ -36,16 +36,20 @@
             }
          }),
          setDatabaseValue = function (newValue, updateCurrentValue) {
-            //if the database value is the same as the currentValue
-            //update or if we don't care about changes the user may have made we can 
-            //overwrite the current value as well
-            if (databaseValue() === currentValue() || updateCurrentValue === true) {
+            //if we overwrite the current value as well
+            if (updateCurrentValue === true) {
                currentValue(newValue);
             }
-            
-            //setting the database value will cause the 
-            //isDirty to re-evaluate
+
+            //setting the database value will cause isDirty to re-evaluate
             databaseValue(newValue);
+
+            //sometimes after a database update we need to notify that something has changed in order to update or save
+            if (isDirty() === true) {
+               if (onValueChanged !== undefined) {
+                  onValueChanged(currentValue());
+               }
+            }
          },
          setDatabaseValueToCurrent = function () {
             databaseValue(currentValue());
@@ -63,7 +67,7 @@
             }
 
             onValueChanged = newValue;
-            
+
             if (onValueChanged !== undefined) {
                currentValueSubscription = currentValue.subscribe(function (val) {
                   onValueChanged(val);
@@ -75,14 +79,15 @@
                currentValueSubscription.dispose();
             }
          };
-         
+
          //if an explicit callback is passed in we will fire the
          //callback whenever the current value changes
          if (onValueChanged !== undefined) {
-            currentValueSubscription = currentValue.subscribe(function(newValue) {
+            currentValueSubscription = currentValue.subscribe(function (newValue) {
                onValueChanged(newValue);
             });
          }
+
 
          return {
             isDeleted: isDeleted,
@@ -93,7 +98,7 @@
             setDatabaseValue: setDatabaseValue,
             setDatabaseValueToCurrent: setDatabaseValueToCurrent,
             revertToDatabaseValue: revertToDatabaseValue,
-            setValueChangedCallback : setValueChangedCallback,
+            setValueChangedCallback: setValueChangedCallback,
             destroy: destroy
          };
       };
